@@ -246,6 +246,7 @@ type Campaign struct {
 	AltBody           null.String     `db:"altbody" json:"altbody"`
 	SendAt            null.Time       `db:"send_at" json:"send_at"`
 	Status            string          `db:"status" json:"status"`
+	PreviewText       null.String     `db:"preview_text" json:"preview_text"`
 	ContentType       string          `db:"content_type" json:"content_type"`
 	Tags              pq.StringArray  `db:"tags" json:"tags"`
 	Headers           Headers         `db:"headers" json:"headers"`

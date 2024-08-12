@@ -89,6 +89,7 @@ CREATE TABLE campaigns (
     from_email       TEXT NOT NULL,
     body             TEXT NOT NULL,
     altbody          TEXT NULL,
+    preview_text     TEXT NULL,
     content_type     content_type NOT NULL DEFAULT 'richtext',
     send_at          TIMESTAMP WITH TIME ZONE,
     headers          JSONB NOT NULL DEFAULT '[]',
@@ -108,7 +109,7 @@ CREATE TABLE campaigns (
     sent               INT NOT NULL DEFAULT 0,
     max_subscriber_id  INT NOT NULL DEFAULT 0,
     last_subscriber_id INT NOT NULL DEFAULT 0,
-
+    
     -- Publishing.
     archive             BOOLEAN NOT NULL DEFAULT false,
     archive_slug        TEXT NULL UNIQUE,
