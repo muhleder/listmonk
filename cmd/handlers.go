@@ -138,6 +138,7 @@ func initHTTPHandlers(e *echo.Echo, app *App) {
 	g.POST("/api/campaigns/:id/content", handleCampaignContent)
 	g.POST("/api/campaigns/:id/text", handlePreviewCampaign)
 	g.POST("/api/campaigns/:id/test", handleTestCampaign)
+	g.POST("/api/campaigns/:id/mail", handleSendCampaignMail)
 	g.POST("/api/campaigns", handleCreateCampaign)
 	g.PUT("/api/campaigns/:id", handleUpdateCampaign)
 	g.PUT("/api/campaigns/:id/status", handleUpdateCampaignStatus)

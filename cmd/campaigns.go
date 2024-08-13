@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/knadh/listmonk/internal/subimporter"
 	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
@@ -470,6 +471,111 @@ func handleTestCampaign(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError,
 				app.i18n.Ts("campaigns.errorSendTest", "error", err.Error()))
 		}
+	}
+
+	return c.JSON(http.StatusOK, okResp{true})
+}
+
+// handleSendCampaignMail handles the sending of a campaign message to
+// a single email,
+func handleSendCampaignMail(c echo.Context) error {
+	var (
+		app       = c.Get("app").(*App)
+		campID, _ = strconv.Atoi(c.Param("id"))
+		req       subimporter.SubReq
+	)
+
+	if campID < 1 {
+		return echo.NewHTTPError(http.StatusBadRequest, app.i18n.T("globals.messages.errorID"))
+	}
+
+	// Get and validate fields.
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	sub, err := app.core.GetSubscriber(0, "", req.Email)
+	if err != nil {
+		return err
+	}
+
+	if sub.Status != models.SubscriberStatusEnabled {
+		return c.JSON(http.StatusAccepted, okResp{true})
+	}
+
+	// The campaign.
+	camp, err := app.core.GetCampaign(campID, "", "")
+	if err != nil {
+		print(err)
+		return err
+	}
+
+	// Only continue if the campaign status is finished
+	if camp.Status != models.CampaignStatusFinished {
+		return c.JSON(http.StatusForbidden, "Campaign not finished")
+	}
+
+	// Decode list id name pairs
+	var lists []struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
+	err = camp.Lists.Unmarshal(&lists)
+	if err != nil {
+		return err
+	}
+
+	if len(lists) < 1 {
+		app.log.Printf("No list attached to campaign in campaign mail: %v ", camp.ID)
+		return c.JSON(http.StatusAccepted, okResp{true})
+	}
+
+	// Use the first list attached to the campaign to add and check the subscriber against
+	campaignListId := lists[0].ID
+
+	// Get the lists for the subscriber
+	var subscriberLists []models.List
+	err = json.Unmarshal(sub.Lists, &subscriberLists)
+	if err != nil {
+		return err
+	}
+
+	// If the subscriber has already been added to the campaign list then we stop
+	// as we don't want to send them the same mail twice
+	for _, list := range subscriberLists {
+		if list.ID == campaignListId {
+			app.log.Printf("Subscriber already in campaign list. campaign: %v subscriber: %v", campaignListId, sub.ID)
+			return c.JSON(http.StatusAccepted, okResp{true})
+		}
+	}
+
+	// Compile campaign template
+	if err := camp.CompileTemplate(app.manager.TemplateFuncs(&camp)); err != nil {
+		app.log.Printf("error compiling template: %v", err)
+		return echo.NewHTTPError(http.StatusInternalServerError,
+			app.i18n.Ts("templates.errorCompiling", "error", err.Error()))
+	}
+
+	// Create a campaign message.
+	msg, err := app.manager.NewCampaignMessage(&camp, sub)
+	if err != nil {
+		app.log.Printf("error rendering message: %v", err)
+		return echo.NewHTTPError(http.StatusNotFound,
+			app.i18n.Ts("templates.errorRendering", "error", err.Error()))
+	}
+
+	if err := app.manager.PushCampaignMessage(msg); err != nil {
+		app.log.Printf("error sending campaign email: %v", err)
+		return echo.NewHTTPError(http.StatusInternalServerError,
+			app.i18n.Ts("globals.messages.internalError", "error", err.Error()))
+	}
+
+	// Add the subscriber to the campaign list
+	err = app.core.AddSubscriptions([]int{sub.ID}, []int{campaignListId}, models.SubscriptionStatusUnconfirmed)
+	if err != nil {
+		app.log.Printf("error adding subscriber to list: %v", err)
+		return echo.NewHTTPError(http.StatusNotFound,
+			app.i18n.Ts("globals.messages.internalError", "error", err.Error()))
 	}
 
 	return c.JSON(http.StatusOK, okResp{true})
