@@ -252,10 +252,11 @@ func handleSubscriptionPrefs(c echo.Context) error {
 		subUUID  = c.Param("subUUID")
 
 		req struct {
-			Name      string   `form:"name" json:"name"`
-			ListUUIDs []string `form:"l" json:"list_uuids"`
-			Blocklist bool     `form:"blocklist" json:"blocklist"`
-			Manage    bool     `form:"manage" json:"manage"`
+			Name              string   `form:"name" json:"name"`
+			ListUUIDs         []string `form:"l" json:"list_uuids"`
+			Blocklist         bool     `form:"blocklist" json:"blocklist"`
+			Manage            bool     `form:"manage" json:"manage"`
+			DisableSubscriber bool     `form:"disable_subscriber" json:"disable_subscriber"`
 		}
 	)
 
@@ -263,6 +264,24 @@ func handleSubscriptionPrefs(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.Render(http.StatusBadRequest, tplMessage,
 			makeMsgTpl(app.i18n.T("public.errorTitle"), "", app.i18n.T("globals.messages.invalidData")))
+	}
+
+	// Custom unsubscribe to allow user to set status to disabled instead of blocklisted
+	if req.DisableSubscriber {
+		// Get the subscriber from the DB.
+		sub, err := app.core.GetSubscriber(0, subUUID, "")
+		if err != nil {
+			return c.Render(http.StatusInternalServerError, tplMessage,
+				makeMsgTpl(app.i18n.T("public.errorTitle"), "", app.i18n.Ts("globals.messages.pFound",
+					"name", app.i18n.T("globals.terms.subscriber"))))
+		}
+		sub.Status = models.SubscriberStatusDisabled
+		if _, err := app.core.UpdateSubscriber(sub.ID, sub); err != nil {
+			return c.Render(http.StatusInternalServerError, tplMessage,
+				makeMsgTpl(app.i18n.T("public.errorTitle"), "", app.i18n.T("public.errorProcessingRequest")))
+		}
+		return c.Render(http.StatusOK, tplMessage,
+			makeMsgTpl(app.i18n.T("public.unsubbedTitle"), "", app.i18n.T("public.unsubbedInfo")))
 	}
 
 	// Simple unsubscribe.
