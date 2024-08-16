@@ -820,6 +820,7 @@ WITH camp AS (
         archive_slug=$16,
         archive_template_id=$17,
         archive_meta=$18,
+        preview_text=$20,
         updated_at=NOW()
     WHERE id = $1 RETURNING id
 ),
