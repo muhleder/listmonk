@@ -710,8 +710,7 @@ func validateCampaignFields(c campaignReq, app *App) (campaignReq, error) {
 // properties can be mutated.
 func isCampaignalMutable(status string) bool {
 	return status == models.CampaignStatusRunning ||
-		status == models.CampaignStatusCancelled ||
-		status == models.CampaignStatusFinished
+		status == models.CampaignStatusCancelled
 }
 
 // makeOptinCampaignMessage makes a default opt-in campaign message body.

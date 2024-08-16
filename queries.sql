@@ -811,7 +811,7 @@ WITH camp AS (
         altbody=(CASE WHEN $6 = '' THEN NULL ELSE $6 END),
         content_type=$7::content_type,
         send_at=$8::TIMESTAMP WITH TIME ZONE,
-        status=(CASE WHEN NOT $9 THEN 'draft' ELSE status END),
+        status=(CASE WHEN NOT $9 THEN status ELSE status END),
         headers=$10,
         tags=$11::VARCHAR(100)[],
         messenger=$12,

@@ -162,6 +162,11 @@
                   </b-button>
                 </b-field>
               </div>
+              <div class="box" v-if="isFinished">
+                <b-field label="Allow campaign to be edited">
+                      <b-switch v-model="overrideAllowEdit" />
+                </b-field>
+              </div>
             </div>
           </div>
         </section>
@@ -303,6 +308,7 @@ export default Vue.extend({
     return {
       isNew: false,
       isEditing: false,
+      overrideAllowEdit: false,
       isHeadersVisible: false,
       isAttachFieldVisible: false,
       isAttachModalOpen: false,
@@ -353,6 +359,10 @@ export default Vue.extend({
 
     onRemoveAltBody() {
       this.form.altbody = null;
+    },
+
+    onToggleAllowEdit() {
+      this.overrideAllowEdit = !this.overrideAllowEdit;
     },
 
     onShowHeaders() {
@@ -607,7 +617,7 @@ export default Vue.extend({
     ...mapState(['settings', 'loading', 'lists', 'templates']),
 
     canEdit() {
-      return this.isNew
+      return this.isNew || this.overrideAllowEdit
         || this.data.status === 'draft' || this.data.status === 'scheduled';
     },
 
@@ -621,6 +631,10 @@ export default Vue.extend({
 
     canArchive() {
       return this.data.status !== 'cancelled' && this.data.type !== 'optin';
+    },
+
+    isFinished() {
+      return this.data.status === 'finished';
     },
 
     selectedLists() {
