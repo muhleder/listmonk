@@ -3,6 +3,7 @@ package postback
 import (
 	"bytes"
 	"encoding/base64"
+	json "encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -138,7 +139,12 @@ func (p *Postback) Push(m models.Message) error {
 		return err
 	}
 
-	return p.exec(http.MethodPost, p.o.RootURL, b, nil)
+	messageId, err := p.exec(http.MethodPost, p.o.RootURL, b, nil)
+
+	print(messageId)
+	// TODO save emails to database
+
+	return err
 }
 
 // Flush flushes the message queue to the server.
@@ -152,7 +158,7 @@ func (p *Postback) Close() error {
 	return nil
 }
 
-func (p *Postback) exec(method, rURL string, reqBody []byte, headers http.Header) error {
+func (p *Postback) exec(method, rURL string, reqBody []byte, headers http.Header) (string, error) {
 	var (
 		err      error
 		postBody io.Reader
@@ -165,7 +171,7 @@ func (p *Postback) exec(method, rURL string, reqBody []byte, headers http.Header
 
 	req, err := http.NewRequest(method, rURL, postBody)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if headers != nil {
@@ -194,7 +200,7 @@ func (p *Postback) exec(method, rURL string, reqBody []byte, headers http.Header
 
 	r, err := p.c.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer func() {
 		// Drain and close the body to let the Transport reuse the connection
@@ -203,8 +209,23 @@ func (p *Postback) exec(method, rURL string, reqBody []byte, headers http.Header
 	}()
 
 	if r.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-OK response from Postback server: %d", r.StatusCode)
+		return "", fmt.Errorf("non-OK response from Postback server: %d", r.StatusCode)
 	}
 
-	return nil
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return "", nil
+	}
+
+	var messengerResponse MessengerResponse
+	if err := json.Unmarshal(body, &messengerResponse); err != nil {
+		return "", nil
+	}
+
+	return messengerResponse.Data, nil
+}
+
+type MessengerResponse struct {
+	Status string `json:"status"`
+	Data   string `json:"data"`
 }
