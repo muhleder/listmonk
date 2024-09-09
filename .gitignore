@@ -3,6 +3,7 @@ frontend/.cache/
 frontend/yarn.lock
 frontend/build/
 .vscode/
+cmd/__debug*
 
 config.toml
 node_modules
