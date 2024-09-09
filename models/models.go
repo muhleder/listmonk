@@ -171,6 +171,25 @@ type subLists struct {
 	Lists        types.JSONText `db:"lists"`
 }
 
+type Email struct {
+	ID         int       `db:"id" json:"id"`
+	CampaignID int       `db:"campaign_id" json:"campaign_id"`
+	MessageID  string    `db:"message_id" json:"message_id"`
+	Recipient  string    `db:"recipient" json:"recipient"`
+	Source     string    `db:"source" json:"source"`
+	Subject    string    `db:"subject" json:"subject"`
+	Status     string    `db:"status" json:"status"`
+	SentAt     time.Time `db:"sent_at" json:"sent_at"`
+}
+
+type EmailEvent struct {
+	ID        int             `db:"id" json:"id"`
+	EmailID   int             `db:"email_id" json:"email_id"`
+	Event     string          `db:"event" json:"event"`
+	EventData json.RawMessage `db:"event_data" json:"event_data"`
+	Timestamp time.Time       `db:"timestamp" json:"timestamp"`
+}
+
 // Subscription represents a list attached to a subscriber.
 type Subscription struct {
 	List
