@@ -464,6 +464,20 @@ UPDATE lists SET updated_at=NOW() WHERE id = ANY($1);
 -- name: delete-lists
 DELETE FROM lists WHERE id = ALL($1);
 
+-- name: create-email
+INSERT INTO emails (campaign_id, message_id, recipient, source, subject, status, sent_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id;
+
+-- name: get-email-by-message-id
+SELECT * FROM emails WHERE message_id = $1;
+
+-- name: count-emails-by-message-id
+SELECT COUNT(*) FROM emails WHERE message_id = $1;
+
+-- name: update-email
+UPDATE emails SET status=$2 WHERE message_id = $1;
+
+-- name: create-email-event
+INSERT INTO email_events (message_id, event, event_data, timestamp) VALUES($1, $2, $3, $4) RETURNING id;
 
 -- campaigns
 -- name: create-campaign

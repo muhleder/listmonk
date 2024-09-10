@@ -184,7 +184,7 @@ type Email struct {
 
 type EmailEvent struct {
 	ID        int             `db:"id" json:"id"`
-	EmailID   int             `db:"email_id" json:"email_id"`
+	MessageID string          `db:"message_id" json:"message_id"`
 	Event     string          `db:"event" json:"event"`
 	EventData json.RawMessage `db:"event_data" json:"event_data"`
 	Timestamp time.Time       `db:"timestamp" json:"timestamp"`
