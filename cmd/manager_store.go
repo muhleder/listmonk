@@ -129,3 +129,10 @@ func (s *store) DeleteSubscriber(id int64) error {
 	_, err := s.queries.DeleteSubscribers.Exec(pq.Int64Array{id})
 	return err
 }
+
+// CreateEmail stores an email in the database.
+func (s *store) CreateEmail(e models.Email) error {
+	var newID int
+	error := s.queries.CreateEmail.Get(&newID, e.CampaignID, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt)
+	return error
+}

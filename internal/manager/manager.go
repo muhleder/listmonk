@@ -37,6 +37,7 @@ type Store interface {
 	CreateLink(url string) (string, error)
 	BlocklistSubscriber(id int64) error
 	DeleteSubscriber(id int64) error
+	CreateEmail(e models.Email) error
 }
 
 // Messenger is an interface for a generic messaging backend,
@@ -484,9 +485,23 @@ func (m *Manager) worker() {
 
 			out.Headers = h
 
-			_, err := m.messengers[msg.Campaign.Messenger].Push(out)
+			message_id, err := m.messengers[msg.Campaign.Messenger].Push(out)
+
 			if err != nil {
 				m.log.Printf("error sending message in campaign %s: subscriber %d: %v", msg.Campaign.Name, msg.Subscriber.ID, err)
+			} else {
+				email := models.Email{
+					CampaignID: msg.Campaign.ID,
+					MessageID:  message_id,
+					Recipient:  msg.to,
+					Subject:    msg.subject,
+					Source:     msg.from,
+					Status:     "sent",
+					SentAt:     time.Now(),
+				}
+				if err := m.store.CreateEmail(email); err != nil {
+					m.log.Printf("error saving email '%s': %v", message_id, err)
+				}
 			}
 
 			// Increment the send rate or the error counter if there was an error.
@@ -512,9 +527,23 @@ func (m *Manager) worker() {
 				return
 			}
 
-			_, err := m.messengers[msg.Messenger].Push(msg)
+			message_id, err := m.messengers[msg.Messenger].Push(msg)
+
 			if err != nil {
 				m.log.Printf("error sending message '%s': %v", msg.Subject, err)
+			} else {
+				email := models.Email{
+					CampaignID: msg.Campaign.ID,
+					MessageID:  message_id,
+					Recipient:  msg.To[0],
+					Subject:    msg.Subject,
+					Source:     msg.From,
+					Status:     "sent",
+					SentAt:     time.Now(),
+				}
+				if err := m.store.CreateEmail(email); err != nil {
+					m.log.Printf("error saving email '%s': %v", message_id, err)
+				}
 			}
 		}
 	}
