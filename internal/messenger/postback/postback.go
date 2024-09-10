@@ -95,7 +95,7 @@ func (p *Postback) Name() string {
 }
 
 // Push pushes a message to the server.
-func (p *Postback) Push(m models.Message) error {
+func (p *Postback) Push(m models.Message) (string, error) {
 	pb := postback{
 		Subject:     m.Subject,
 		FromEmail:   m.From,
@@ -136,15 +136,10 @@ func (p *Postback) Push(m models.Message) error {
 
 	b, err := pb.MarshalJSON()
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	messageId, err := p.exec(http.MethodPost, p.o.RootURL, b, nil)
-
-	print(messageId)
-	// TODO save emails to database
-
-	return err
+	return p.exec(http.MethodPost, p.o.RootURL, b, nil)
 }
 
 // Flush flushes the message queue to the server.

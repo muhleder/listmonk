@@ -43,7 +43,7 @@ type Store interface {
 // for instance, e-mail, SMS etc.
 type Messenger interface {
 	Name() string
-	Push(models.Message) error
+	Push(models.Message) (string, error)
 	Flush() error
 	Close() error
 }
@@ -484,7 +484,7 @@ func (m *Manager) worker() {
 
 			out.Headers = h
 
-			err := m.messengers[msg.Campaign.Messenger].Push(out)
+			_, err := m.messengers[msg.Campaign.Messenger].Push(out)
 			if err != nil {
 				m.log.Printf("error sending message in campaign %s: subscriber %d: %v", msg.Campaign.Name, msg.Subscriber.ID, err)
 			}
@@ -512,7 +512,7 @@ func (m *Manager) worker() {
 				return
 			}
 
-			err := m.messengers[msg.Messenger].Push(msg)
+			_, err := m.messengers[msg.Messenger].Push(msg)
 			if err != nil {
 				m.log.Printf("error sending message '%s': %v", msg.Subject, err)
 			}
