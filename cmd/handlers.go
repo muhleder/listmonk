@@ -175,6 +175,8 @@ func initHTTPHandlers(e *echo.Echo, app *App) {
 		e.POST("/webhooks/service/:service", handleBounceWebhook)
 	}
 
+	e.POST("/webhooks/sns", handleSesNotificationWebhook)
+
 	// Public API endpoints.
 	e.GET("/api/public/lists", handleGetPublicLists)
 	e.POST("/api/public/subscription", handlePublicSubscription)
