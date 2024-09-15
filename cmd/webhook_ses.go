@@ -310,7 +310,7 @@ func recordOpenNotification(m sesMail) (models.EmailEvent, error) {
 	}
 	event = models.EmailEvent{
 		MessageID: m.Mail.MessageID,
-		Event:     "open",
+		Event:     "open_aws",
 		EventData: json.RawMessage(jsonBytes),
 		Timestamp: time.Time(m.Open.Timestamp),
 	}
@@ -325,7 +325,7 @@ func recordClickNotification(m sesMail) (models.EmailEvent, error) {
 	}
 	event = models.EmailEvent{
 		MessageID: m.Mail.MessageID,
-		Event:     "click",
+		Event:     "click_aws",
 		EventData: json.RawMessage(jsonBytes),
 		Timestamp: time.Time(m.Click.Timestamp),
 	}
