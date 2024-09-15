@@ -56,12 +56,13 @@ type Queries struct {
 	UpdateListsDate *sqlx.Stmt `query:"update-lists-date"`
 	DeleteLists     *sqlx.Stmt `query:"delete-lists"`
 
-	CreateEmail            *sqlx.Stmt `query:"create-email"`
-	GetEmailByMessageId    *sqlx.Stmt `query:"get-email-by-message-id"`
-	CountEmailsByMessageId *sqlx.Stmt `query:"count-emails-by-message-id"`
-	UpdateEmail            *sql.Stmt  `query:"update-email"`
+	StoreEmail                     *sqlx.Stmt `query:"store-email"`
+	GetEmailByMessageId            *sqlx.Stmt `query:"get-email-by-message-id"`
+	GetEmailByCampaignSubscriberId *sqlx.Stmt `query:"get-email-by-campaign-subscriber-id"`
+	CountEmailsByMessageId         *sqlx.Stmt `query:"count-emails-by-message-id"`
+	UpdateEmail                    *sql.Stmt  `query:"update-email"`
 
-	CreateEmailEvent *sqlx.Stmt `query:"create-email-event"`
+	StoreEmailEvent *sqlx.Stmt `query:"store-email-event"`
 
 	CreateCampaign        *sqlx.Stmt `query:"create-campaign"`
 	QueryCampaigns        string     `query:"query-campaigns"`

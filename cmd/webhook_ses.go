@@ -179,8 +179,7 @@ func handleSesNotificationWebhook(c echo.Context) error {
 	app.ensureEmailExists(m)
 	app.setEmailStatus(m)
 
-	_, err = app.queries.CreateEmailEvent.Exec(event.MessageID, event.Event, event.EventData, event.Timestamp)
-	if err != nil {
+	if err := app.core.StoreEmailEvent(event); err != nil {
 		app.log.Printf("error recording email event: %v", err)
 	}
 
@@ -204,7 +203,7 @@ func (app *App) ensureEmailExists(m sesMail) {
 		Status:    "sent",
 		SentAt:    m.Mail.Timestamp,
 	}
-	if _, err := app.queries.CreateEmail.Exec(nil, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
+	if _, err := app.queries.StoreEmail.Exec(nil, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
 		app.log.Printf("error saving email: %v", err)
 	}
 }
