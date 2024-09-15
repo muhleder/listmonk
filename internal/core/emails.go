@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// GetEmail gets an email by it's message id.
+// GetEmailByMessageId gets an email by it's message id.
 func (c *Core) GetEmailByMessageId(message_id string) (models.Email, error) {
 	var res []models.Email
 	if err := c.q.GetEmailByMessageId.Select(&res, message_id); err != nil {

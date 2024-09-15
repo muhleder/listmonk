@@ -480,7 +480,7 @@ SELECT COUNT(*) FROM emails WHERE message_id = $1;
 UPDATE emails SET status=$2 WHERE message_id = $1;
 
 -- name: store-email-event
-INSERT INTO email_events (message_id, event, event_data, timestamp) VALUES($1, $2, $3, $4) RETURNING id;
+INSERT INTO email_events (email_id, message_id, campaign_id, subscriber_id, event, event_data, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7);
 
 -- campaigns
 -- name: create-campaign

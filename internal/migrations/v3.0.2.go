@@ -35,7 +35,9 @@ CREATE INDEX IF NOT EXISTS emails_message_id_index ON emails(message_id text_ops
 CREATE TABLE IF NOT EXISTS email_events (
     id serial PRIMARY KEY,
     email_id int,
-    message_id character varying(255) NOT NULL,
+    message_id character,
+    campaign_id character,
+    subscriber_id character,
     event character varying(255) NOT NULL,
     event_data json,
     timestamp timestamp(0) without time zone
