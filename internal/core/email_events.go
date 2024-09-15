@@ -58,3 +58,34 @@ func (c *Core) RegisterOpenEmailEvent(campUUID, subUUID string, context echo.Con
 	}
 	c.StoreEmailEvent(event)
 }
+
+func (c *Core) RegisterClickEmailEvent(campUUID, subUUID, linkUUID string, context echo.Context) {
+	eventData := struct {
+		IpAddress string
+		UserAgent string
+		Referer   string
+		LinkUUID  string
+	}{
+		IpAddress: context.RealIP(),
+		UserAgent: context.Request().UserAgent(),
+		Referer:   context.Request().Referer(),
+		LinkUUID:  linkUUID,
+	}
+	jsonBytes, err := json.Marshal(eventData)
+	if err != nil {
+		c.log.Printf("error encoding JSON: %v", err)
+	}
+	email, err := c.GetEmailByCampaignSubscriberUUID(campUUID, subUUID)
+	if err != nil {
+		c.log.Printf("error getting email in RegisterClickEmailEvent: %v %v %s", campUUID, subUUID, err)
+	}
+	event := models.EmailEvent{
+		EmailID:        email.ID,
+		CampaignUUID:   campUUID,
+		SubscriberUUID: subUUID,
+		Event:          "click",
+		EventData:      json.RawMessage(jsonBytes),
+		Timestamp:      time.Now(),
+	}
+	c.StoreEmailEvent(event)
+}

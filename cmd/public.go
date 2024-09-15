@@ -546,6 +546,8 @@ func handleLinkRedirect(c echo.Context) error {
 		return c.Render(e.Code, tplMessage, makeMsgTpl(app.i18n.T("public.errorTitle"), "", e.Error()))
 	}
 
+	app.core.RegisterClickEmailEvent(campUUID, subUUID, linkUUID, c)
+
 	return c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
