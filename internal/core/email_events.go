@@ -14,13 +14,13 @@ func (c *Core) StoreEmailEvent(e models.EmailEvent) error {
 	switch true {
 	case e.MessageID != "":
 		email, _ = c.GetEmailByMessageId(e.MessageID)
-	case e.CampaignID != "" && e.SubscriberID != "":
-		email, _ = c.GetEmailByCampaignSubscriberId(e.CampaignID, e.SubscriberID)
+	case e.CampaignUUID != "" && e.SubscriberUUID != "":
+		email, _ = c.GetEmailByCampaignSubscriberUUID(e.CampaignUUID, e.SubscriberUUID)
 	default:
 		c.log.Printf("Missing message id or campaign/subscriber ids when saving EmailEvent. Timestamp: %v", e.Timestamp)
 	}
 
-	if _, err := c.q.StoreEmailEvent.Exec(email.ID, e.MessageID, e.CampaignID, e.SubscriberID, e.Event, e.EventData, e.Timestamp); err != nil {
+	if _, err := c.q.StoreEmailEvent.Exec(email.ID, e.MessageID, e.CampaignUUID, e.SubscriberUUID, e.Event, e.EventData, e.Timestamp); err != nil {
 		c.log.Printf("error creating email_event: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			c.i18n.Ts("globals.messages.errorCreating", "name", "email_event", "error", pqErrMsg(err)))

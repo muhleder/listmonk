@@ -23,9 +23,9 @@ func (c *Core) GetEmailByMessageId(message_id string) (models.Email, error) {
 	return out, nil
 }
 
-func (c *Core) GetEmailByCampaignSubscriberId(campaign_id string, subscriber_id string) (models.Email, error) {
+func (c *Core) GetEmailByCampaignSubscriberUUID(campaign_uuid string, subscriber_uuid string) (models.Email, error) {
 	var res []models.Email
-	if err := c.q.GetEmailByCampaignSubscriberId.Get(&res, campaign_id, subscriber_id); err != nil {
+	if err := c.q.GetEmailByCampaignSubscriberUUID.Get(&res, campaign_uuid, subscriber_uuid); err != nil {
 		c.log.Printf("error fetching email by campaign and subscriber id: %s", pqErrMsg(err))
 		return models.Email{}, echo.NewHTTPError(http.StatusInternalServerError,
 			c.i18n.Ts("globals.messages.errorFetching", "name", "email", "error", pqErrMsg(err)))
@@ -40,7 +40,7 @@ func (c *Core) GetEmailByCampaignSubscriberId(campaign_id string, subscriber_id 
 
 // StoreEmail stores an email in the database.
 func (c *Core) StoreEmail(e models.Email) error {
-	if _, err := c.q.StoreEmail.Exec(e.CampaignID, e.SubscriberID, e.CampaignID, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
+	if _, err := c.q.StoreEmail.Exec(e.MessageID, e.CampaignUUID, e.SubscriberUUID, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
 		c.log.Printf("error creating email: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			c.i18n.Ts("globals.messages.errorCreating", "name", "email", "error", pqErrMsg(err)))

@@ -465,13 +465,13 @@ UPDATE lists SET updated_at=NOW() WHERE id = ANY($1);
 DELETE FROM lists WHERE id = ALL($1);
 
 -- name: store-email
-INSERT INTO emails (campaign_id, subscriber_id, message_id, recipient, source, subject, status, sent_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8);
+INSERT INTO emails (message_id, campaign_uuid, subscriber_uuid, recipient, source, subject, status, sent_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8);
 
 -- name: get-email-by-message-id
 SELECT * FROM emails WHERE message_id = $1;
 
--- name: get-email-by-campaign-subscriber-id
-SELECT * FROM emails WHERE campaign_id = $1 AND subscriber_id = $2;
+-- name: get-email-by-campaign-subscriber-uuid
+SELECT * FROM emails WHERE campaign_uuid = $1 AND subscriber_uuid = $2;
 
 -- name: count-emails-by-message-id
 SELECT COUNT(*) FROM emails WHERE message_id = $1;
@@ -480,7 +480,7 @@ SELECT COUNT(*) FROM emails WHERE message_id = $1;
 UPDATE emails SET status=$2 WHERE message_id = $1;
 
 -- name: store-email-event
-INSERT INTO email_events (email_id, message_id, campaign_id, subscriber_id, event, event_data, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7);
+INSERT INTO email_events (email_id, message_id, campaign_uuid, subscriber_uuid, event, event_data, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7);
 
 -- campaigns
 -- name: create-campaign
