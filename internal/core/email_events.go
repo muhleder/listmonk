@@ -1,7 +1,9 @@
 package core
 
 import (
+	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/knadh/listmonk/models"
 	"github.com/labstack/echo/v4"
@@ -26,4 +28,33 @@ func (c *Core) StoreEmailEvent(e models.EmailEvent) error {
 			c.i18n.Ts("globals.messages.errorCreating", "name", "email_event", "error", pqErrMsg(err)))
 	}
 	return nil
+}
+
+func (c *Core) RegisterOpenEmailEvent(campUUID, subUUID string, context echo.Context) {
+	eventData := struct {
+		IpAddress string
+		UserAgent string
+		Referer   string
+	}{
+		IpAddress: context.RealIP(),
+		UserAgent: context.Request().UserAgent(),
+		Referer:   context.Request().Referer(),
+	}
+	jsonBytes, err := json.Marshal(eventData)
+	if err != nil {
+		c.log.Printf("error encoding JSON: %v", err)
+	}
+	email, err := c.GetEmailByCampaignSubscriberUUID(campUUID, subUUID)
+	if err != nil {
+		c.log.Printf("error getting email in RegisterOpenEmailEvent: %v %v %s", campUUID, subUUID, err)
+	}
+	event := models.EmailEvent{
+		EmailID:        email.ID,
+		CampaignUUID:   campUUID,
+		SubscriberUUID: subUUID,
+		Event:          "open",
+		EventData:      json.RawMessage(jsonBytes),
+		Timestamp:      time.Now(),
+	}
+	c.StoreEmailEvent(event)
 }

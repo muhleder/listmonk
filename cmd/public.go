@@ -570,6 +570,7 @@ func handleRegisterCampaignView(c echo.Context) error {
 		if err := app.core.RegisterCampaignView(campUUID, subUUID); err != nil {
 			app.log.Printf("error registering campaign view: %s", err)
 		}
+		app.core.RegisterOpenEmailEvent(campUUID, subUUID, c)
 	}
 
 	c.Response().Header().Set("Cache-Control", "no-cache")
