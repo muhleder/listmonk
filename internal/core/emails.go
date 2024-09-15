@@ -25,7 +25,7 @@ func (c *Core) GetEmailByMessageId(message_id string) (models.Email, error) {
 
 func (c *Core) GetEmailByCampaignSubscriberUUID(campaign_uuid string, subscriber_uuid string) (models.Email, error) {
 	var res []models.Email
-	if err := c.q.GetEmailByCampaignSubscriberUUID.Get(&res, campaign_uuid, subscriber_uuid); err != nil {
+	if err := c.q.GetEmailByCampaignSubscriberUUID.Select(&res, campaign_uuid, subscriber_uuid); err != nil {
 		c.log.Printf("error fetching email by campaign and subscriber id: %s", pqErrMsg(err))
 		return models.Email{}, echo.NewHTTPError(http.StatusInternalServerError,
 			c.i18n.Ts("globals.messages.errorFetching", "name", "email", "error", pqErrMsg(err)))

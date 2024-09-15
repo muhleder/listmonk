@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS emails (
 -- Indices -------------------------------------------------------
 
 CREATE UNIQUE INDEX IF NOT EXISTS emails_pkey ON emails(id int4_ops);
-CREATE INDEX IF NOT EXISTS emails_campaign_id_index ON emails(campaign_id int4_ops);
+CREATE INDEX IF NOT EXISTS campaign_uuid_index ON emails(campaign_uuid text_ops);
+CREATE INDEX IF NOT EXISTS subscriber_uuid_index ON emails(campaign_uuid text_ops);
 CREATE INDEX IF NOT EXISTS emails_recipient_index ON emails(recipient text_ops);
 CREATE INDEX IF NOT EXISTS emails_message_id_index ON emails(message_id text_ops);
 
@@ -47,6 +48,7 @@ CREATE TABLE IF NOT EXISTS email_events (
 
 CREATE UNIQUE INDEX IF NOT EXISTS email_events_pkey ON email_events(id int4_ops);
 CREATE INDEX IF NOT EXISTS email_events_message_id_index ON email_events(message_id text_ops);
+CREATE INDEX IF NOT EXISTS email_events_email_id_index ON email_events(email_id int4_ops);
 
 	`); err != nil {
 		return err
