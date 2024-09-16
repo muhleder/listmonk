@@ -127,7 +127,6 @@ func handleSesNotificationWebhook(c echo.Context) error {
 	}
 
 	sesType := getType(m)
-
 	switch sesType {
 	case "Delivery":
 		event, err = recordDeliveryNotification(m)
@@ -187,8 +186,8 @@ func handleSesNotificationWebhook(c echo.Context) error {
 }
 
 func (app *App) ensureEmailExists(m sesMail) {
-	var emailCount int
-	if err := app.queries.CountEmailsByMessageId.Get(&emailCount, m.Mail.MessageID); err != nil {
+	emailCount, err := app.core.CountEmailsByMessageId(m.Mail.MessageID)
+	if err != nil {
 		app.log.Printf("error ensuring email: %v", err)
 		return
 	}
@@ -203,7 +202,7 @@ func (app *App) ensureEmailExists(m sesMail) {
 		Status:    "sent",
 		SentAt:    m.Mail.Timestamp,
 	}
-	if _, err := app.queries.StoreEmail.Exec(nil, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
+	if err := app.core.StoreEmail(e); err != nil {
 		app.log.Printf("error saving email: %v", err)
 	}
 }
@@ -222,7 +221,7 @@ func (app *App) setEmailStatus(m sesMail) {
 	default:
 		return
 	}
-	if _, err := app.queries.UpdateEmail.Exec(newStatus); err != nil {
+	if err := app.core.UpdateEmailStatus(m.Mail.MessageID, newStatus); err != nil {
 		app.log.Printf("error updating email status: %v", err)
 	}
 }

@@ -40,7 +40,7 @@ func (c *Core) GetEmailByCampaignSubscriberUUID(campaign_uuid string, subscriber
 
 // StoreEmail stores an email in the database.
 func (c *Core) StoreEmail(e models.Email) error {
-	if _, err := c.q.StoreEmail.Exec(e.MessageID, e.CampaignUUID, e.SubscriberUUID, e.MessageID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
+	if _, err := c.q.StoreEmail.Exec(e.MessageID, e.CampaignUUID, e.SubscriberUUID, e.Recipient, e.Source, e.Subject, e.Status, e.SentAt); err != nil {
 		c.log.Printf("error creating email: %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			c.i18n.Ts("globals.messages.errorCreating", "name", "email", "error", pqErrMsg(err)))
@@ -61,4 +61,13 @@ func (c *Core) UpdateEmailStatus(message_id string, status string) error {
 			c.i18n.Ts("globals.messages.notFound", "status", "email"))
 	}
 	return nil
+}
+
+func (c *Core) CountEmailsByMessageId(message_id string) (int, error) {
+	var emailCount int
+	if err := c.q.CountEmailsByMessageId.Get(&emailCount, message_id); err != nil {
+		c.log.Printf("error ensuring email: %v", err)
+		return 0, err
+	}
+	return emailCount, nil
 }

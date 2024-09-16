@@ -60,7 +60,7 @@ type Queries struct {
 	GetEmailByMessageId              *sqlx.Stmt `query:"get-email-by-message-id"`
 	GetEmailByCampaignSubscriberUUID *sqlx.Stmt `query:"get-email-by-campaign-subscriber-uuid"`
 	CountEmailsByMessageId           *sqlx.Stmt `query:"count-emails-by-message-id"`
-	UpdateEmail                      *sql.Stmt  `query:"update-email"`
+	UpdateEmail                      *sqlx.Stmt `query:"update-email"`
 
 	StoreEmailEvent *sqlx.Stmt `query:"store-email-event"`
 

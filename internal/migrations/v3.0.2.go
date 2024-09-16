@@ -15,9 +15,9 @@ func V3_0_2(db *sqlx.DB, fs stuffbin.FileSystem, ko *koanf.Koanf, lo *log.Logger
 
 CREATE TABLE IF NOT EXISTS emails (
     id serial PRIMARY KEY,
-    campaign_uuid character varying(255),
-    subscriber_uuid character varying(255),
-    message_id character varying(255),
+    campaign_uuid character varying(255) NOT NULL DEFAULT '':character varying,
+    subscriber_uuid character varying(255) NOT NULL DEFAULT '':character varying,
+    message_id character varying(255) NOT NULL DEFAULT '':character varying,
     recipient character varying(255) NOT NULL,
     source character varying(255) NOT NULL,
     subject character varying(255) DEFAULT NULL::character varying,
@@ -36,9 +36,9 @@ CREATE INDEX IF NOT EXISTS emails_message_id_index ON emails(message_id text_ops
 CREATE TABLE IF NOT EXISTS email_events (
     id serial PRIMARY KEY,
     email_id int,
-    message_id character varying(255),
-    campaign_uuid character varying(255),
-    subscriber_uuid character varying(255),
+    message_id character varying(255) NOT NULL DEFAULT '':character varying,
+    campaign_uuid character varying(255) NOT NULL DEFAULT '':character varying,
+    subscriber_uuid character varying(255) NOT NULL DEFAULT '':character varying,
     event character varying(255) NOT NULL,
     event_data json,
     timestamp timestamp(0) without time zone
