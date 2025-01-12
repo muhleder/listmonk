@@ -1,21 +1,35 @@
 # Upgrade
 
-Some versions may require changes to the database. These changes or database "migrations" are applied automatically and safely, but, it is recommended to take a backup of the Postgres database before running the `--upgrade` option, especially if you have made customizations to the database tables.
+!!! Warning
+    Always take a backup of the Postgres database before upgrading listmonk
 
 ## Binary
-- Download the [latest release](https://github.com/knadh/listmonk/releases) and extract the listmonk binary.
-- `./listmonk --upgrade` to upgrade an existing DB. Upgrades are idempotent and running them multiple times have no side effects.
-- Run `./listmonk` and visit `http://localhost:9000`.
+- Stop the running instance of listmonk.
+- Download the [latest release](https://github.com/knadh/listmonk/releases) and extract the listmonk binary and overwrite the previous version.
+- `./listmonk --upgrade` to upgrade an existing database schema. Upgrades are idempotent and running them multiple times have no side effects.
+- Run `./listmonk` again.
 
 If you installed listmonk as a service, you will need to stop it before overwriting the binary. Something like `sudo systemctl stop listmonk` or `sudo service listmonk stop` should work. Then overwrite the binary with the new version, then run `./listmonk --upgrade, and `start` it back with the same commands.
 
 If it's not running as a service, `pkill -9 listmonk` will stop the listmonk process.
 
 ## Docker
+**Important:** The following instructions are for the new [docker-compose.yml](https://github.com/knadh/listmonk/blob/master/docker-compose.yml) file.
 
-- `docker compose pull` to pull the latest version from DockerHub.
-- `docker compose run --rm app ./listmonk --upgrade` to upgrade an existing DB.
-- Run `docker compose up app db` and visit `http://localhost:9000`.
+```shell
+docker compose down app
+docker compose pull
+docker compose up app -d
+```
+
+If you are using an older docker-compose.yml file, you have to run the `--upgrade` step manually.
+
+```shell
+docker-compose down
+docker-compose pull && docker-compose run --rm app ./listmonk --upgrade
+docker-compose up -d app db
+```
+
 
 ## Railway
 - Head to your dashboard, and select your Listmonk project.
@@ -58,3 +72,14 @@ x-app-defaults: &app-defaults
 4. Restart:
 `sudo docker compose up -d app db nginx certbot`
 
+
+## Upgrading to v4.x.x
+v4 is a major upgrade from prior versions with significant changes to certain important features and behaviour. It is the first version to have multi-user support and full fledged user management. Prior versions only had a simple BasicAuth for both admin login (browser prompt) and API calls, with the username and password defined in the TOML configuration file.
+
+It is safe to upgrade an older installation with `--upgrade`, but there are a few important things to keep in mind. The upgrade automatically imports the `admin_username` and `admin_password` defined in the TOML configuration into the new user management system.
+
+1. **New login UI**: Once you upgrade an older installation, the admin dashboard will no longer show the native browser prompt for login. Instead, a new login UI rendered by listmonk is displayed at the URI `/admin/login`.
+
+1. **API credentials**: If you are using APIs to interact with listmonk, after logging in, go to Settings -> Users and create a new API user with the necessary permissions. Change existing API integrations to use these credentials instead of the old username and password defined in the legacy TOML configuration file or environment variables.
+
+1. **Credentials in TOML file or old environment variables**: The admin dashboard shows a warning until the `admin_username` and `admin_password` fields are removed from the configuration file or old environment variables. In v4.x.x, these are irrelevant as user credentials are stored in the database and managed from the admin UI. IMPORTANT: if you are using APIs to interact with listmonk, follow the previous step before removing the legacy credentials.

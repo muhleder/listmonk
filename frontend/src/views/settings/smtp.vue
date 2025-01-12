@@ -66,13 +66,14 @@
                 </b-field>
               </div>
             </div><!-- auth -->
-            <div class="smtp-shortcuts is-size-7">
+            <div class="spaced-links is-size-7">
               <a href="#" @click.prevent="() => fillSettings(n, 'gmail')">Gmail</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'ses')">Amazon SES</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'mailgun')">Mailgun</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'mailjet')">Mailjet</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'sendgrid')">Sendgrid</a>
               <a href="#" @click.prevent="() => fillSettings(n, 'postmark')">Postmark</a>
+              <a href="#" @click.prevent="() => fillSettings(n, 'forwardemail')">Forward Email</a>
             </div>
             <hr />
 
@@ -165,8 +166,8 @@
                   </div>
                   <div class="column is-4">
                     <b-field :label="$t('settings.smtp.toEmail')" label-position="on-border">
-                      <b-input type="email" required v-model="testEmail" :ref="'testEmailTo'" placeholder="email@site.com"
-                        :custom-class="`test-email-${n}`" />
+                      <b-input type="email" required v-model="testEmail" :ref="'testEmailTo'"
+                        placeholder="email@site.com" :custom-class="`test-email-${n}`" />
                     </b-field>
                   </div>
                 </template>
@@ -219,6 +220,9 @@ const smtpTemplates = {
   },
   sendgrid: {
     host: 'smtp.sendgrid.net', port: 465, auth_protocol: 'login', tls_type: 'TLS',
+  },
+  forwardemail: {
+    host: 'smtp.forwardemail.net', port: 465, auth_protocol: 'login', tls_type: 'TLS',
   },
   postmark: {
     host: 'smtp.postmarkapp.com', port: 587, auth_protocol: 'cram', tls_type: 'STARTTLS',

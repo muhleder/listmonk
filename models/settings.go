@@ -40,6 +40,13 @@ type Settings struct {
 	SecurityCaptchaKey    string `json:"security.captcha_key"`
 	SecurityCaptchaSecret string `json:"security.captcha_secret"`
 
+	OIDC struct {
+		Enabled      bool   `json:"enabled"`
+		ProviderURL  string `json:"provider_url"`
+		ClientID     string `json:"client_id"`
+		ClientSecret string `json:"client_secret"`
+	} `json:"security.oidc"`
+
 	UploadProvider             string   `json:"upload.provider"`
 	UploadExtensions           []string `json:"upload.extensions"`
 	UploadFilesystemUploadPath string   `json:"upload.filesystem.upload_path"`
@@ -99,6 +106,10 @@ type Settings struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	} `json:"bounce.postmark"`
+	BounceForwardEmail struct {
+		Enabled bool   `json:"enabled"`
+		Key     string `json:"key"`
+	} `json:"bounce.forwardemail"`
 	BounceBoxes []struct {
 		UUID          string `json:"uuid"`
 		Enabled       bool   `json:"enabled"`

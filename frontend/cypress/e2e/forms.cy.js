@@ -3,11 +3,7 @@ const apiUrl = Cypress.env('apiUrl');
 describe('Forms', () => {
   it('Opens forms page', () => {
     cy.resetDB();
-    cy.loginAndVisit('/lists/forms');
-  });
-
-  it('Checks form URL', () => {
-    cy.get('a[data-cy=url]').contains('http://localhost:9000');
+    cy.loginAndVisit('/admin/lists/forms');
   });
 
   it('Checks public lists', () => {
@@ -16,7 +12,7 @@ describe('Forms', () => {
       .its('length')
       .should('eq', 1);
 
-    cy.get('[data-cy=form] pre').should('not.exist');
+    cy.get('[data-cy=form] code-flask').should('not.exist');
   });
 
   it('Selects public list', () => {
@@ -24,7 +20,7 @@ describe('Forms', () => {
     cy.get('ul[data-cy=lists] .checkbox').click();
 
     // Make sure the <pre> form HTML has appeared.
-    cy.get('[data-cy=form] pre').then(($pre) => {
+    cy.get('code-flask').shadow().find('pre').then(($pre) => {
       // Check that the ID of the list in the checkbox appears in the HTML.
       cy.get('ul[data-cy=lists] input').then(($inp) => {
         cy.wrap($pre).contains($inp.val());
@@ -70,13 +66,13 @@ describe('Forms', () => {
 
   it('Unsubscribes', () => {
     // Add all lists to the dummy campaign.
-    cy.request('PUT', `${apiUrl}/api/campaigns/1`, { 'lists': [2] });
+    cy.request('PUT', `${apiUrl}/api/campaigns/1`, { lists: [2] });
 
     cy.request('GET', `${apiUrl}/api/subscribers`).then((response) => {
-      let subUUID = response.body.data.results[0].uuid;
+      const subUUID = response.body.data.results[0].uuid;
 
       cy.request('GET', `${apiUrl}/api/campaigns`).then((response) => {
-        let campUUID = response.body.data.results[0].uuid;
+        const campUUID = response.body.data.results[0].uuid;
         cy.loginAndVisit(`${apiUrl}/subscription/${campUUID}/${subUUID}`);
       });
     });
@@ -110,11 +106,12 @@ describe('Forms', () => {
 
   it('Manages subscription preferences', () => {
     cy.request('GET', `${apiUrl}/api/subscribers`).then((response) => {
-      let subUUID = response.body.data.results[1].uuid;
+      const subUUID = response.body.data.results[1].uuid;
 
       cy.request('GET', `${apiUrl}/api/campaigns`).then((response) => {
-        let campUUID = response.body.data.results[0].uuid;
+        const campUUID = response.body.data.results[0].uuid;
         cy.loginAndVisit(`${apiUrl}/subscription/${campUUID}/${subUUID}?manage=1`);
+        cy.get('a').contains('Manage').click();
       });
     });
 
@@ -130,5 +127,4 @@ describe('Forms', () => {
       expect(data.results[1].lists.find((s) => s.id === 3).subscription_status).to.equal('unconfirmed');
     });
   });
-
 });

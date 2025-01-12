@@ -21,7 +21,7 @@ FRONTEND_DEPS = \
 
 BIN := listmonk
 STATIC := config.toml.sample \
-	schema.sql queries.sql \
+	schema.sql queries.sql permissions.json \
 	static/public:/public \
 	static/email-templates \
 	frontend/dist:/admin \
@@ -38,8 +38,8 @@ $(FRONTEND_YARN_MODULES): frontend/package.json frontend/yarn.lock
 	touch -c $(FRONTEND_YARN_MODULES)
 
 # Build the backend to ./listmonk.
-$(BIN): $(shell find . -type f -name "*.go") go.mod go.sum
-	CGO_ENABLED=0 env GOOS=linux GOARCH=amd64 go build -o ${BIN} -ldflags="-s -w -X 'main.buildString=${BUILDSTR}' -X 'main.versionString=${VERSION}'" cmd/*.go
+$(BIN): $(shell find . -type f -name "*.go") go.mod go.sum schema.sql queries.sql permissions.json
+	CGO_ENABLED=0 go build -o ${BIN} -ldflags="-s -w -X 'main.buildString=${BUILDSTR}' -X 'main.versionString=${VERSION}'" cmd/*.go
 
 # Run the backend in dev mode. The frontend assets in dev mode are loaded from disk from frontend/dist.
 .PHONY: run
@@ -79,12 +79,12 @@ pack-bin: build-frontend $(BIN) $(STUFFBIN)
 # Use goreleaser to do a dry run producing local builds.
 .PHONY: release-dry
 release-dry:
-	goreleaser --parallelism 1 --rm-dist --snapshot --skip-validate --skip-publish
+	goreleaser release --parallelism 1 --clean --snapshot --skip=publish
 
 # Use goreleaser to build production releases and publish them.
 .PHONY: release
 release:
-	goreleaser --parallelism 1 --rm-dist --skip-validate
+	goreleaser release --parallelism 1 --clean
 
 # Build local docker images for development.
 .PHONY: build-dev-docker

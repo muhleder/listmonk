@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM alpine:latest
+FROM alpine:latest
 
 # Install dependencies
 RUN apk --no-cache add ca-certificates tzdata shadow su-exec
@@ -9,7 +9,6 @@ WORKDIR /listmonk
 # Copy only the necessary files
 COPY listmonk .
 COPY config.toml.sample config.toml
-COPY config-demo.toml .
 
 # Copy the entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/

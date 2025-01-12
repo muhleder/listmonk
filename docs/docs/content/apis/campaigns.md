@@ -23,7 +23,7 @@ Retrieve all campaigns.
 ##### Example Request
 
 ```shell
- curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns?page=1&per_page=100'
+ curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns?page=1&per_page=100'
 ```
 
 ##### Parameters
@@ -37,6 +37,7 @@ Retrieve all campaigns.
 | tags     | []string |          | Tags to filter campaigns. Repeat in the query for multiple values.   |
 | page     | number   |          | Page number for paginated results.                                   |
 | per_page | number   |          | Results per page. Set as 'all' for all results.                      |
+| no_body  | boolean   |          | When set to true, returns response without body content.                      |
 
 ##### Example Response
 
@@ -94,11 +95,12 @@ Retrieve a specific campaign.
 | Name        | Type      | Required | Description  |
 |:------------|:----------|:---------|:-------------|
 | campaign_id | number    | Yes      | Campaign ID. |
+| no_body  | boolean   |          | When set to true, returns response without body content.                      |
 
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/1'
+curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns/1'
 ```
 
 ##### Example Response
@@ -153,7 +155,7 @@ Preview a specific campaign.
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/1/preview'
+curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns/1/preview'
 ```
 
 ##### Example Response
@@ -178,7 +180,7 @@ Retrieve stats of specified campaigns.
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/running/stats?campaign_id=1'
+curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns/running/stats?campaign_id=1'
 ```
 
 ##### Example Response
@@ -201,14 +203,14 @@ Retrieve stats of specified campaigns.
 |:------------|:----------|:---------|:----------------------------------------------|
 | id          |number\[\] | Yes      | Campaign IDs to get stats for.                |
 | type        |string     | Yes      | Analytics type: views, links, clicks, bounces |
-| from        |string     | Yes      | Campaign IDs to get stats for.                |
-| to          |string     | Yes      | Campaign IDs to get stats for.                |
+| from        |string     | Yes      | Start value of date range.                |
+| to          |string     | Yes      | End value of date range.                |
 
 
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/analytics/views?id=1&from=2024-08-04&to=2024-08-12'
+curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns/analytics/views?id=1&from=2024-08-04&to=2024-08-12'
 ```
 
 ##### Example Response
@@ -248,7 +250,7 @@ curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/analytic
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X GET 'http://localhost:9000/api/campaigns/analytics/links?id=1&from=2024-08-04T18%3A30%3A00.624Z&to=2024-08-12T18%3A29%3A00.624Z'
+curl -u "api_user:token" -X GET 'http://localhost:9000/api/campaigns/analytics/links?id=1&from=2024-08-04T18%3A30%3A00.624Z&to=2024-08-12T18%3A29%3A00.624Z'
 ```
 
 ##### Example Response
@@ -303,7 +305,7 @@ Create a new campaign.
 ##### Example request
 
 ```shell
-curl -u "username:password" 'http://localhost:9000/api/campaigns' -X POST -H 'Content-Type: application/json;charset=utf-8' --data-raw '{"name":"Test campaign","subject":"Hello, world","lists":[1],"from_email":"listmonk <noreply@listmonk.yoursite.com>","content_type":"richtext","messenger":"email","type":"regular","tags":["test"],"template_id":1}'
+curl -u "api_user:token" 'http://localhost:9000/api/campaigns' -X POST -H 'Content-Type: application/json;charset=utf-8' --data-raw '{"name":"Test campaign","subject":"Hello, world","lists":[1],"from_email":"listmonk <noreply@listmonk.yoursite.com>","content_type":"richtext","messenger":"email","type":"regular","tags":["test"],"template_id":1}'
 ```
 
 ##### Example response
@@ -394,7 +396,7 @@ Change status of a campaign.
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X PUT 'http://localhost:9000/api/campaigns/1/status' \
+curl -u "api_user:token" -X PUT 'http://localhost:9000/api/campaigns/1/status' \
 --header 'Content-Type: application/json' \
 --data-raw '{"status":"scheduled"}'
 ```
@@ -457,7 +459,7 @@ Publish campaign to public archive.
 
 ```shell
 
-curl -u "username:password" -X PUT 'http://localhost:8080/api/campaigns/33/archive' 
+curl -u "api_user:token" -X PUT 'http://localhost:8080/api/campaigns/33/archive' 
 --header 'Content-Type: application/json' 
 --data-raw '{"archive":true,"archive_template_id":1,"archive_meta":{},"archive_slug":"my-newsletter-old-edition"}'
 ```
@@ -490,7 +492,7 @@ Delete a campaign.
 ##### Example Request
 
 ```shell
-curl -u "username:password" -X DELETE 'http://localhost:9000/api/campaigns/34'
+curl -u "api_user:token" -X DELETE 'http://localhost:9000/api/campaigns/34'
 ```
 
 ##### Example Response

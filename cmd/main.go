@@ -15,6 +15,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/v2"
+	"github.com/knadh/listmonk/internal/auth"
 	"github.com/knadh/listmonk/internal/bounce"
 	"github.com/knadh/listmonk/internal/buflog"
 	"github.com/knadh/listmonk/internal/captcha"
@@ -44,6 +45,7 @@ type App struct {
 	manager    *manager.Manager
 	importer   *subimporter.Importer
 	messengers map[string]manager.Messenger
+	auth       *auth.Auth
 	media      media.Store
 	i18n       *i18n.I18n
 	bounce     *bounce.Manager
@@ -62,6 +64,9 @@ type App struct {
 	// after a settings update.
 	needsRestart bool
 
+	// First time installation with no user records in the DB. Needs user setup.
+	needsUserSetup bool
+
 	// Global state that stores data on an available remote update.
 	update *AppUpdate
 	sync.Mutex
@@ -72,7 +77,7 @@ var (
 	evStream = events.New()
 	bufLog   = buflog.New(5000)
 	lo       = log.New(io.MultiWriter(os.Stdout, bufLog, evStream.ErrWriter()), "",
-		log.Ldate|log.Ltime|log.Lshortfile)
+		log.Ldate|log.Ltime|log.Lmicroseconds|log.Lshortfile)
 
 	ko      = koanf.New(".")
 	fs      stuffbin.FileSystem
@@ -210,6 +215,13 @@ func main() {
 	app.queries = queries
 	app.manager = initCampaignManager(app.queries, app.constants, app)
 	app.importer = initImporter(app.queries, db, app.core, app)
+
+	hasUsers, auth := initAuth(db.DB, ko, app.core)
+	app.auth = auth
+	// If there are are no users in the DB who can login, the app has to prompt
+	// for new user setup.
+	app.needsUserSetup = !hasUsers
+
 	app.notifTpls = initNotifTemplates("/email-templates/*.html", fs, app.i18n, app.constants)
 	initTxTemplates(app.manager, app)
 

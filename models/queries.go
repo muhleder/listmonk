@@ -18,6 +18,7 @@ type Queries struct {
 	UpsertSubscriber                *sqlx.Stmt `query:"upsert-subscriber"`
 	UpsertBlocklistSubscriber       *sqlx.Stmt `query:"upsert-blocklist-subscriber"`
 	GetSubscriber                   *sqlx.Stmt `query:"get-subscriber"`
+	HasSubscriberLists              *sqlx.Stmt `query:"has-subscriber-list"`
 	GetSubscribersByEmails          *sqlx.Stmt `query:"get-subscribers-by-emails"`
 	GetSubscriberLists              *sqlx.Stmt `query:"get-subscriber-lists"`
 	GetSubscriptions                *sqlx.Stmt `query:"get-subscriptions"`
@@ -83,6 +84,7 @@ type Queries struct {
 	DeleteCampaignLinkClicks   *sqlx.Stmt `query:"delete-campaign-link-clicks"`
 
 	NextCampaigns            *sqlx.Stmt `query:"next-campaigns"`
+	GetRunningCampaign       *sqlx.Stmt `query:"get-running-campaign"`
 	NextCampaignSubscribers  *sqlx.Stmt `query:"next-campaign-subscribers"`
 	GetOneCampaignSubscriber *sqlx.Stmt `query:"get-one-campaign-subscriber"`
 	UpdateCampaign           *sqlx.Stmt `query:"update-campaign"`
@@ -115,6 +117,24 @@ type Queries struct {
 	DeleteBounces             *sqlx.Stmt `query:"delete-bounces"`
 	DeleteBouncesBySubscriber *sqlx.Stmt `query:"delete-bounces-by-subscriber"`
 	GetDBInfo                 string     `query:"get-db-info"`
+
+	CreateUser        *sqlx.Stmt `query:"create-user"`
+	UpdateUser        *sqlx.Stmt `query:"update-user"`
+	UpdateUserProfile *sqlx.Stmt `query:"update-user-profile"`
+	UpdateUserLogin   *sqlx.Stmt `query:"update-user-login"`
+	DeleteUsers       *sqlx.Stmt `query:"delete-users"`
+	GetUsers          *sqlx.Stmt `query:"get-users"`
+	GetUser           *sqlx.Stmt `query:"get-user"`
+	GetAPITokens      *sqlx.Stmt `query:"get-api-tokens"`
+	LoginUser         *sqlx.Stmt `query:"login-user"`
+
+	CreateRole            *sqlx.Stmt `query:"create-role"`
+	GetUserRoles          *sqlx.Stmt `query:"get-user-roles"`
+	GetListRoles          *sqlx.Stmt `query:"get-list-roles"`
+	UpdateRole            *sqlx.Stmt `query:"update-role"`
+	DeleteRole            *sqlx.Stmt `query:"delete-role"`
+	UpsertListPermissions *sqlx.Stmt `query:"upsert-list-permissions"`
+	DeleteListPermission  *sqlx.Stmt `query:"delete-list-permission"`
 }
 
 // CompileSubscriberQueryTpl takes an arbitrary WHERE expressions
@@ -122,7 +142,7 @@ type Queries struct {
 // out of it using the raw `query-subscribers-template` query template.
 // While doing this, a readonly transaction is created and the query is
 // dry run on it to ensure that it is indeed readonly.
-func (q *Queries) CompileSubscriberQueryTpl(exp string, db *sqlx.DB) (string, error) {
+func (q *Queries) CompileSubscriberQueryTpl(exp string, db *sqlx.DB, subStatus string) (string, error) {
 	tx, err := db.BeginTxx(context.Background(), &sql.TxOptions{ReadOnly: true})
 	if err != nil {
 		return "", err
@@ -134,19 +154,18 @@ func (q *Queries) CompileSubscriberQueryTpl(exp string, db *sqlx.DB) (string, er
 		exp = " AND " + exp
 	}
 	stmt := fmt.Sprintf(q.QuerySubscribersTpl, exp)
-	if _, err := tx.Exec(stmt, true, pq.Int64Array{}); err != nil {
+	if _, err := tx.Exec(stmt, true, pq.Int64Array{}, subStatus); err != nil {
 		return "", err
 	}
-
 	return stmt, nil
 }
 
 // compileSubscriberQueryTpl takes an arbitrary WHERE expressions and a subscriber
 // query template that depends on the filter (eg: delete by query, blocklist by query etc.)
 // combines and executes them.
-func (q *Queries) ExecSubQueryTpl(exp, tpl string, listIDs []int, db *sqlx.DB, args ...interface{}) error {
+func (q *Queries) ExecSubQueryTpl(exp, tpl string, listIDs []int, db *sqlx.DB, subStatus string, args ...interface{}) error {
 	// Perform a dry run.
-	filterExp, err := q.CompileSubscriberQueryTpl(exp, db)
+	filterExp, err := q.CompileSubscriberQueryTpl(exp, db, subStatus)
 	if err != nil {
 		return err
 	}
@@ -156,10 +175,9 @@ func (q *Queries) ExecSubQueryTpl(exp, tpl string, listIDs []int, db *sqlx.DB, a
 	}
 
 	// First argument is the boolean indicating if the query is a dry run.
-	a := append([]interface{}{false, pq.Array(listIDs)}, args...)
+	a := append([]interface{}{false, pq.Array(listIDs), subStatus}, args...)
 	if _, err := db.Exec(fmt.Sprintf(tpl, filterExp), a...); err != nil {
 		return err
 	}
-
 	return nil
 }

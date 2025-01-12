@@ -10,7 +10,7 @@
           </h1>
         </div>
         <div class="column has-text-right">
-          <b-field expanded>
+          <b-field v-if="$can('settings:manage')" expanded>
             <b-button expanded :disabled="!hasFormChanged" type="is-primary" icon-left="content-save-outline"
               native-type="submit" class="isSaveEnabled" data-cy="btn-save">
               {{ $t('globals.buttons.save') }}
@@ -160,10 +160,22 @@ export default Vue.extend({
         hasDummy = 'captcha';
       }
 
+      if (this.isDummy(form['security.oidc'].client_secret)) {
+        form['security.oidc'].client_secret = '';
+      } else if (this.hasDummy(form['security.oidc'].client_secret)) {
+        hasDummy = 'oidc';
+      }
+
       if (this.isDummy(form['bounce.postmark'].password)) {
         form['bounce.postmark'].password = '';
       } else if (this.hasDummy(form['bounce.postmark'].password)) {
         hasDummy = 'postmark';
+      }
+
+      if (this.isDummy(form['bounce.forwardemail'].key)) {
+        form['bounce.forwardemail'].key = '';
+      } else if (this.hasDummy(form['bounce.forwardemail'].key)) {
+        hasDummy = 'forwardemail';
       }
 
       for (let i = 0; i < form.messengers.length; i += 1) {
@@ -204,7 +216,7 @@ export default Vue.extend({
             this.$root.loadConfig();
             this.getSettings();
           });
-        }, 500);
+        }, 1000);
       }, () => {
         this.isLoading = false;
       });
