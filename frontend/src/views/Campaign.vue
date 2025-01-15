@@ -37,6 +37,12 @@
                 {{ $t('campaigns.start') }}
               </b-button>
             </b-field>
+            <b-field expanded v-if="canStart">
+              <b-button expanded @click="finishCampaign" :loading="loading.campaigns" type="is-primary"
+                icon-left="rocket-launch-outline" data-cy="btn-start">
+                Set Finished
+              </b-button>
+            </b-field>
             <b-field expanded v-if="canSchedule">
               <b-button expanded @click="startCampaign" :loading="loading.campaigns" type="is-primary"
                 icon-left="clock-start" data-cy="btn-schedule">
@@ -602,6 +608,33 @@ export default Vue.extend({
               status = 'running';
             } else if (this.canSchedule) {
               status = 'scheduled';
+            } else {
+              return;
+            }
+
+            this.$api.changeCampaignStatus(this.data.id, status).then(() => {
+              this.$router.push({ name: 'campaigns' });
+            });
+          });
+        },
+      );
+    },
+
+    // Sets a campaign's status to finished
+    finishCampaign() {
+      if (!this.canStart && !this.canSchedule) {
+        return;
+      }
+
+      this.$utils.confirm(
+        null,
+        () => {
+          // First save the campaign.
+          this.updateCampaign().then(() => {
+            // Then finish it.
+            let status = '';
+            if (this.canStart || this.canSchedule) {
+              status = 'finished';
             } else {
               return;
             }
