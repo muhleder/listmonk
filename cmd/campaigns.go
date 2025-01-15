@@ -545,7 +545,7 @@ func handleSendCampaignMail(c echo.Context) error {
 	for _, list := range subscriberLists {
 		if list.ID == campaignListId {
 			app.log.Printf("Subscriber already in campaign list. campaign: %v subscriber: %v", campaignListId, sub.ID)
-			return c.JSON(http.StatusAccepted, okResp{true})
+			return c.JSON(http.StatusAlreadyReported, okResp{true})
 		}
 	}
 
