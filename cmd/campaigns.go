@@ -527,7 +527,7 @@ func handleSendCampaignMail(c echo.Context) error {
 
 	if len(lists) < 1 {
 		app.log.Printf("No list attached to campaign in campaign mail: %v ", camp.ID)
-		return c.JSON(http.StatusAccepted, okResp{true})
+		return c.JSON(http.StatusForbidden, "Campaign has no list attached")
 	}
 
 	// Use the first list attached to the campaign to add and check the subscriber against
