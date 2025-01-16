@@ -38,9 +38,9 @@
               </b-button>
             </b-field>
             <b-field expanded v-if="canStart">
-              <b-button expanded @click="finishCampaign" :loading="loading.campaigns" type="is-primary"
-                icon-left="rocket-launch-outline" data-cy="btn-start">
-                Set Finished
+              <b-button expanded @click="apiCampaign" :loading="loading.campaigns" type="is-primary"
+                icon-left="robot-outline" data-cy="btn-start">
+                Use with API
               </b-button>
             </b-field>
             <b-field expanded v-if="canSchedule">
@@ -620,8 +620,8 @@ export default Vue.extend({
       );
     },
 
-    // Sets a campaign's status to finished
-    finishCampaign() {
+    // Sets a campaign's status to api
+    apiCampaign() {
       if (!this.canStart && !this.canSchedule) {
         return;
       }
@@ -634,7 +634,7 @@ export default Vue.extend({
             // Then finish it.
             let status = '';
             if (this.canStart || this.canSchedule) {
-              status = 'finished';
+              status = 'api';
             } else {
               return;
             }
@@ -653,7 +653,8 @@ export default Vue.extend({
 
     canEdit() {
       return this.isNew || this.overrideAllowEdit
-        || this.data.status === 'draft' || this.data.status === 'scheduled';
+        || this.data.status === 'draft' || this.data.status === 'scheduled'
+        || this.data.status === 'api';
     },
 
     canSchedule() {
@@ -670,6 +671,10 @@ export default Vue.extend({
 
     isFinished() {
       return this.data.status === 'finished';
+    },
+
+    isApi() {
+      return this.data.status === 'api';
     },
 
     selectedLists() {
