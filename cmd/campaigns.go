@@ -511,8 +511,8 @@ func handleSendCampaignMail(c echo.Context) error {
 	}
 
 	// Only continue if the campaign status is finished
-	if camp.Status != models.CampaignStatusFinished {
-		return c.JSON(http.StatusForbidden, "Campaign not finished")
+	if camp.Status != models.CampaignStatusApi {
+		return c.JSON(http.StatusForbidden, "Campaign not enabled for api")
 	}
 
 	// Decode list id name pairs
