@@ -630,9 +630,7 @@ export default Vue.extend({
         null,
         () => {
           // First save the campaign.
-          this.updateCampaign().then(async () => {
-            let result = await this.createList();
-            console.log('result', result);
+          this.updateCampaign().then(() => {
             // Then finish it.
             let status = '';
             if (this.canStart || this.canSchedule) {
@@ -648,15 +646,6 @@ export default Vue.extend({
         },
       );
     },
-
-    async createList()  {
-      return Dialog.confirm({
-        scroll: 'keep',
-        message: 'You need a list to use the API with a campaign. Create one now?',
-        confirmText: this.i18n.t('globals.buttons.ok'),
-        cancelText: this.i18n.t('globals.buttons.cancel'),
-      });
-    }
   },
 
   computed: {
