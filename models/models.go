@@ -41,6 +41,7 @@ const (
 	CampaignStatusRunning       = "running"
 	CampaignStatusPaused        = "paused"
 	CampaignStatusFinished      = "finished"
+	CampaignStatusApi           = "api"
 	CampaignStatusCancelled     = "cancelled"
 	CampaignTypeRegular         = "regular"
 	CampaignTypeOptin           = "optin"

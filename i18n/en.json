@@ -89,6 +89,7 @@
     "campaigns.status.cancelled": "Cancelled",
     "campaigns.status.draft": "Draft",
     "campaigns.status.finished": "Finished",
+    "campaigns.status.api": "API",
     "campaigns.status.paused": "Paused",
     "campaigns.status.running": "Running",
     "campaigns.status.scheduled": "Scheduled",
