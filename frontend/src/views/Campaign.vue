@@ -630,7 +630,7 @@ export default Vue.extend({
         null,
         () => {
           // First save the campaign.
-          this.updateCampaign().then(async () => {
+          this.updateCampaign().then(() => {
             // Then finish it.
             let status = '';
             if (this.canStart || this.canSchedule) {
@@ -638,29 +638,14 @@ export default Vue.extend({
             } else {
               return;
             }
-            let hasList = false;
-            if (hasList) {
-              this.$api.changeCampaignStatus(this.data.id, status).then(() => {
-                this.$router.push({ name: 'campaigns' });
-              });
-              return;
-            }
-            this.$utils.confirm(
-              'You need a list to use the API with a campaign. Create one now?',
-              () => {
-                this.createList();
-                this.$api.changeCampaignStatus(this.data.id, status).then(() => {
-                  this.$router.push({ name: 'campaigns' });
-                });
-              }
-            )
+
+            this.$api.changeCampaignStatus(this.data.id, status).then(() => {
+              this.$router.push({ name: 'campaigns' });
+            });
           });
         },
       );
     },
-    async createList()  {
-      console.log('create list')
-    }
   },
 
   computed: {
