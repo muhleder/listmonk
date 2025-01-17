@@ -510,7 +510,7 @@ func handleSendCampaignMail(c echo.Context) error {
 		return err
 	}
 
-	// Only continue if the campaign status is finished
+	// Only continue if the campaign status is api
 	if camp.Status != models.CampaignStatusApi {
 		return c.JSON(http.StatusForbidden, "Campaign not enabled for api")
 	}
@@ -544,7 +544,9 @@ func handleSendCampaignMail(c echo.Context) error {
 	// as we don't want to send them the same mail twice
 	for _, list := range subscriberLists {
 		if list.ID == campaignListId {
-			app.log.Printf("Subscriber already in campaign list. campaign: %v subscriber: %v", campaignListId, sub.ID)
+			app.log.Printf(
+				"Email already sent to api list. listID: %v subscriberId: %v subscriber email: %v",
+				campaignListId, sub.ID, sub.Email)
 			return c.JSON(http.StatusAlreadyReported, okResp{true})
 		}
 	}
