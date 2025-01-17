@@ -12,7 +12,7 @@ import Utils from './utils';
 Vue.use(VueI18n);
 const i18n = new VueI18n();
 
-Vue.use(Buefy, {});
+Vue.use(Buefy, { defaultProgrammaticPromise: true });
 Vue.config.productionTip = false;
 
 // Setup the router.
