@@ -500,7 +500,7 @@ func handleSendCampaignMail(c echo.Context) error {
 	}
 
 	if sub.Status != models.SubscriberStatusEnabled {
-		return c.JSON(http.StatusAccepted, okResp{true})
+		return c.JSON(http.StatusForbidden, "Subscriber status not enabled")
 	}
 
 	// The campaign.
