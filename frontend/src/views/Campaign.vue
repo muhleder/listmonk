@@ -39,7 +39,7 @@
             </b-field>
             <b-field expanded v-if="canStart">
               <b-button expanded @click="apiCampaign" :loading="loading.campaigns" type="is-primary"
-                icon-left="robot-outline" data-cy="btn-start">
+                icon-left="robot" data-cy="btn-start">
                 Use with API
               </b-button>
             </b-field>
