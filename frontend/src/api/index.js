@@ -1,4 +1,7 @@
-import { ToastProgrammatic as Toast } from 'buefy';
+import {
+  ToastProgrammatic as Toast,
+  DialogProgrammatic as Dialog,
+} from 'buefy';
 import axios from 'axios';
 import qs from 'qs';
 import store from '../store';
@@ -337,6 +340,23 @@ export const updateCampaignArchive = async (id, data) => http.put(
   data,
   { loading: models.campaigns },
 );
+
+export const createListForCampaign = async (title) => {
+  const dialogResponse = await Dialog.confirm({
+    scroll: 'keep',
+    message: 'You need to attach a list to a campaign. Create one now?',
+    confirmText: 'Ok',
+    cancelText: 'Cancel',
+  });
+  if (!dialogResponse.result) return false;
+  const response = await http.post(
+    '/api/lists',
+    { name: title, type: 'private', optin: 'single' },
+    { loading: models.lists },
+  );
+  const listId = response.id;
+  return listId;
+};
 
 export const deleteCampaign = async (id) => http.delete(
   `/api/campaigns/${id}`,
