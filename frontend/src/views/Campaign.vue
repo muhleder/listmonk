@@ -508,7 +508,7 @@ export default Vue.extend({
       return false;
     },
 
-    createCampaign() {
+    async createCampaign() {
       const data = {
         archiveSlug: this.form.subject,
         name: this.form.name,
@@ -527,6 +527,12 @@ export default Vue.extend({
         media: this.form.media.map((m) => m.id),
         // body: this.form.body,
       };
+
+      if (data.lists.length < 1) {
+        const listId = await this.$api.createListForCampaign(data.name);
+        if (!listId) return false;
+        data.lists.push(listId);
+      }
 
       this.$api.createCampaign(data).then((d) => {
         this.$router.push({ name: 'campaign', hash: '#content', params: { id: d.id } });
