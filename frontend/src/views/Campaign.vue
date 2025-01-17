@@ -637,15 +637,10 @@ export default Vue.extend({
         () => {
           // First save the campaign.
           this.updateCampaign().then(() => {
-            // Then finish it.
-            let status = '';
-            if (this.canStart || this.canSchedule) {
-              status = 'api';
-            } else {
+            if (!this.canStart && !this.canSchedule) {
               return;
             }
-
-            this.$api.changeCampaignStatus(this.data.id, status).then(() => {
+            this.$api.changeCampaignStatus(this.data.id, 'api').then(() => {
               this.$router.push({ name: 'campaigns' });
             });
           });
