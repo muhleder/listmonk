@@ -643,19 +643,6 @@ func (im *Importer) ValidateFields(s SubReq) (SubReq, error) {
 	}
 	s.Email = strings.ToLower(em)
 
-	// If there's no name, use the name part of the e-mail.
-	s.Name = strings.TrimSpace(s.Name)
-	if len(s.Name) == 0 {
-		name := strings.ToLower(strings.Split(s.Email, "@")[0])
-
-		parts := strings.Fields(strings.ReplaceAll(name, ".", " "))
-		for n, p := range parts {
-			parts[n] = cases.Title(language.Und).String(p)
-		}
-
-		s.Name = strings.Join(parts, " ")
-	}
-
 	return s, nil
 }
 
