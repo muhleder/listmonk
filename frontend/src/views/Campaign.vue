@@ -497,6 +497,7 @@ export default Vue.extend({
         template_id: this.form.templateId,
         content_type: this.form.content.contentType,
         body: this.form.content.body,
+        preview_text: this.form.previewText,
         altbody: this.form.content.contentType !== 'plain' ? this.form.altbody : null,
         subscribers: this.form.testEmails,
         media: this.form.media.map((m) => m.id),
