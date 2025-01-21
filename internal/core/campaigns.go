@@ -228,7 +228,8 @@ func (c *Core) UpdateCampaign(id int, o models.Campaign, listIDs []int, mediaIDs
 		o.ArchiveTemplateID,
 		o.ArchiveMeta,
 		pq.Array(mediaIDs),
-		o.PreviewText)
+		o.PreviewText,
+		o.Subheading)
 	if err != nil {
 		c.log.Printf("error updating campaign: %v", err)
 		return models.Campaign{}, echo.NewHTTPError(http.StatusInternalServerError,

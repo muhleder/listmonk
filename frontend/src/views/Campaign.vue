@@ -78,6 +78,11 @@
                     :placeholder="$t('campaigns.previewText')" />
                 </b-field>
 
+                <b-field :label="$t('campaigns.subheading')" label-position="on-border">
+                  <b-input :maxlength="5000" v-model="form.subheading" name="subheading" :disabled="!canEdit"
+                    :placeholder="$t('campaigns.subheading')" />
+                </b-field>
+
                 <b-field :label="$t('campaigns.fromAddress')" label-position="on-border">
                   <b-input :maxlength="200" v-model="form.fromEmail" name="from_email" :disabled="!canEdit"
                     :placeholder="$t('campaigns.fromAddressPlaceholder')" required />
@@ -333,6 +338,7 @@ export default Vue.extend({
         name: '',
         subject: '',
         previewText: '',
+        subheading: '',
         fromEmail: '',
         headersStr: '[]',
         headers: [],
@@ -498,6 +504,7 @@ export default Vue.extend({
         content_type: this.form.content.contentType,
         body: this.form.content.body,
         preview_text: this.form.previewText,
+        subheading: this.form.subheading,
         altbody: this.form.content.contentType !== 'plain' ? this.form.altbody : null,
         subscribers: this.form.testEmails,
         media: this.form.media.map((m) => m.id),
@@ -515,6 +522,7 @@ export default Vue.extend({
         name: this.form.name,
         subject: this.form.subject,
         preview_text: this.form.previewText,
+        subheading: this.form.subheading,
         lists: this.form.lists.map((l) => l.id),
         from_email: this.form.fromEmail,
         content_type: 'richtext',
@@ -559,6 +567,7 @@ export default Vue.extend({
         body: this.form.content.body,
         altbody: this.form.content.contentType !== 'plain' ? this.form.altbody : null,
         preview_text: this.form.previewText,
+        subheading: this.form.subheading,
         archive: this.form.archive,
         archive_template_id: this.form.archiveTemplateId,
         archive_meta: this.form.archiveMeta,

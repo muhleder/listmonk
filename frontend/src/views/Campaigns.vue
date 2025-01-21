@@ -423,6 +423,7 @@ export default Vue.extend({
         body: c.body,
         altbody: c.altbody,
         preview_text: c.previewText,
+        subheading: c.subheading,
         headers: c.headers,
         send_later: sendLater,
         send_at: sendAt,

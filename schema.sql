@@ -96,6 +96,7 @@ CREATE TABLE campaigns (
     body             TEXT NOT NULL,
     altbody          TEXT NULL,
     preview_text     TEXT NULL,
+    subheading       TEXT NULL,
     content_type     content_type NOT NULL DEFAULT 'richtext',
     send_at          TIMESTAMP WITH TIME ZONE,
     headers          JSONB NOT NULL DEFAULT '[]',
