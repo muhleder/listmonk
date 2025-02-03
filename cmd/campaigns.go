@@ -476,9 +476,9 @@ func handleTestCampaign(c echo.Context) error {
 	return c.JSON(http.StatusOK, okResp{true})
 }
 
-// handleSendCampaignMail handles the sending of a campaign message to
+// handleSendCampaignViaApi handles the sending of a campaign message to
 // a single email,
-func handleSendCampaignMail(c echo.Context) error {
+func handleSendCampaignViaApi(c echo.Context) error {
 	var (
 		app       = c.Get("app").(*App)
 		campID, _ = strconv.Atoi(c.Param("id"))

@@ -170,7 +170,7 @@ func initHTTPHandlers(e *echo.Echo, app *App) {
 	api.POST("/api/campaigns/:id/content", pm(handleCampaignContent, "campaigns:manage"))
 	api.POST("/api/campaigns/:id/text", pm(handlePreviewCampaign, "campaigns:manage"))
 	api.POST("/api/campaigns/:id/test", pm(handleTestCampaign, "campaigns:manage"))
-	api.POST("/api/campaigns/:id/mail", handleSendCampaignMail)
+	api.POST("/api/campaigns/:id/mail", handleSendCampaignViaApi)
 	api.POST("/api/campaigns", pm(handleCreateCampaign, "campaigns:manage"))
 	api.PUT("/api/campaigns/:id", pm(handleUpdateCampaign, "campaigns:manage"))
 	api.PUT("/api/campaigns/:id/status", pm(handleUpdateCampaignStatus, "campaigns:manage"))
