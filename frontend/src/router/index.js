@@ -131,12 +131,6 @@ const routes = [
     meta: { title: 'users.listRoles', group: 'users' },
     component: () => import('../views/Roles.vue'),
   },
-  {
-    path: '/settings/maintenance',
-    name: 'maintenance',
-    meta: { title: 'maintenance.title', group: 'settings' },
-    component: () => import('../views/Maintenance.vue'),
-  },
 ];
 
 const router = new VueRouter({
