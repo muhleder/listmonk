@@ -580,6 +580,11 @@ func handleSendCampaignMail(c echo.Context) error {
 			app.i18n.Ts("globals.messages.internalError", "error", err.Error()))
 	}
 
+	// Update campaign's "sent" count. Increment count by 1, keep last_subscriber_id at 0 for api campaigns.
+	if _, err := app.queries.UpdateCampaignCounts.Exec(camp.ID, 0, 1, 0); err != nil {
+		app.log.Printf("error updating campaign counts (%s): %v", camp.Name, err)
+	}
+
 	return c.JSON(http.StatusOK, okResp{true})
 }
 
